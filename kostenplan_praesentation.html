@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kostenplan & ROI Analyse - NextWave Software</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d4a3e 0%, #1a2f24 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            color: #2d4a3e;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00d084, #00a86b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #00d084, #00a86b);
+        }
+        
+        .chart-container h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        
+        .key-metrics {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #00d084 0%, #00a86b 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .metric-card:hover::before {
+            opacity: 1;
+        }
+        
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .summary {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .summary h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        
+        .summary p {
+            font-size: 1.1em;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .highlight {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+        
+        .nav-btn {
+            background: linear-gradient(135deg, #00d084 0%, #00a86b 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .metric-value {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Kostenplan & ROI Analyse</h1>
+            <p>NextWave Software GmbH - Mitarbeiterzufriedenheits-Plattform</p>
+        </div>
+        
+        <div class="key-metrics">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #2c3e50;">Zentrale Kennzahlen</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">322.835 €</div>
+                    <div class="metric-label">Gesamtinvestition</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">3,25</div>
+                    <div class="metric-label">Jahre bis Break-Even</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">150.000 €</div>
+                    <div class="metric-label">Jährlicher Nutzen</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">30,8%</div>
+                    <div class="metric-label">Jährliche Rendite</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-grid">
+            <div class="chart-container">
+                <h3>Kostenaufteilung nach Phasen</h3>
+                <div class="chart-wrapper">
+                    <canvas id="kostenChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3>ROI-Entwicklung über 4 Jahre</h3>
+                <div class="chart-wrapper">
+                    <canvas id="roiChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-grid">
+            <div class="chart-container">
+                <h3>Cashflow-Analyse</h3>
+                <div class="chart-wrapper">
+                    <canvas id="cashflowChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3>Nutzenverteilung</h3>
+                <div class="chart-wrapper">
+                    <canvas id="nutzenChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-grid">
+            <div class="chart-container">
+                <h3>Personalkosten Phase 2</h3>
+                <div class="chart-wrapper">
+                    <canvas id="personalChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3>Betriebskosten Aufschlüsselung</h3>
+                <div class="chart-wrapper">
+                    <canvas id="betriebsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="summary">
+            <h2>Fazit</h2>
+            <p>Die Investition von <span class="highlight">322.835 €</span> amortisiert sich nach <span class="highlight">3,25 Jahren</span></p>
+            <p>Ab dem 4. Jahr generiert die Plattform einen jährlichen Nettonutzen von <span class="highlight">99.305 €</span></p>
+            <p>Langfristige Investition in Mitarbeiterzufriedenheit mit <span class="highlight">messbarem ROI</span></p>
+        </div>
+        
+        <div class="navigation">
+            <button class="nav-btn" onclick="scrollToTop()">↑ Nach oben</button>
+        </div>
+    </div>
+    
+    <script>
+        // Kostenaufteilung Chart
+        const ctx1 = document.getElementById('kostenChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['Phase 1: Definition', 'Phase 2: Entwicklung', 'Betriebskosten Jahr 1'],
+                datasets: [{
+                    data: [15840, 256300, 50695],
+                    backgroundColor: [
+                        '#00d084',
+                        '#00a86b',
+                        '#4dd0a7'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toLocaleString('de-DE') + ' €';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // ROI Chart
+        const ctx2 = document.getElementById('roiChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ['Jahr 0', 'Jahr 1', 'Jahr 2', 'Jahr 3', 'Jahr 4'],
+                datasets: [{
+                    label: 'Kumulierter Cashflow',
+                    data: [-322835, -223530, -124225, -24920, 74385],
+                    borderColor: '#00d084',
+                    backgroundColor: 'rgba(0, 208, 132, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: '#00d084',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y.toLocaleString('de-DE') + ' €';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('de-DE') + ' €';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Cashflow Chart
+        const ctx3 = document.getElementById('cashflowChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['Jahr 1', 'Jahr 2', 'Jahr 3', 'Jahr 4'],
+                datasets: [{
+                    label: 'Jährlicher Nutzen',
+                    data: [150000, 150000, 150000, 150000],
+                    backgroundColor: '#00d084',
+                    borderRadius: 5
+                }, {
+                    label: 'Betriebskosten',
+                    data: [-50695, -50695, -50695, -50695],
+                    backgroundColor: '#ff6b6b',
+                    borderRadius: 5
+                }, {
+                    label: 'Netto-Cashflow',
+                    data: [99305, 99305, 99305, 99305],
+                    backgroundColor: '#00a86b',
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + Math.abs(context.parsed.y).toLocaleString('de-DE') + ' €';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: function(value) {
+                                return Math.abs(value).toLocaleString('de-DE') + ' €';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Nutzen Chart
+        const ctx4 = document.getElementById('nutzenChart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'pie',
+            data: {
+                labels: ['Reduzierung Fluktuationskosten', 'Produktivitätssteigerung'],
+                datasets: [{
+                    data: [100000, 50000],
+                    backgroundColor: ['#00d084', '#4dd0a7'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toLocaleString('de-DE') + ' €';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Personal Chart
+        const ctx5 = document.getElementById('personalChart').getContext('2d');
+        new Chart(ctx5, {
+            type: 'bar',
+            data: {
+                labels: ['Backend-Entwickler', 'Frontend-Entwickler', 'UX/UI-Designer', 'QA-Tester', 'Projektmanager'],
+                datasets: [{
+                    label: 'Kosten',
+                    data: [81000, 54000, 27000, 27000, 27000],
+                    backgroundColor: [
+                        '#00d084',
+                        '#00a86b',
+                        '#4dd0a7',
+                        '#80e0c7',
+                        '#b3f0dd'
+                    ],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y.toLocaleString('de-DE') + ' €';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('de-DE') + ' €';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Betriebskosten Chart
+        const ctx6 = document.getElementById('betriebsChart').getContext('2d');
+        new Chart(ctx6, {
+            type: 'doughnut',
+            data: {
+                labels: ['Cloud-Hosting', 'KI-Services', 'Wartung & Support'],
+                datasets: [{
+                    data: [24000, 10000, 16695],
+                    backgroundColor: [
+                        '#00d084',
+                        '#00a86b',
+                        '#4dd0a7'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toLocaleString('de-DE') + ' €';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Smooth scrolling animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.chart-container, .metric-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
