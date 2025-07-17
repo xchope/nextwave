@@ -14,6 +14,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* HAUPTHINTERGRUND - Grüner Gradient */
             background: linear-gradient(135deg, #2d4a3e 0%, #1a2f24 100%);
             color: #333;
             line-height: 1.6;
@@ -28,16 +29,115 @@
         .header {
             text-align: center;
             background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
+            padding: 40px 30px 30px 30px;
             border-radius: 15px;
             margin-bottom: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            min-height: 120px;
+        }
+        
+        .company-logo {
+            position: absolute;
+            top: 30px;
+            right: px;
+            width: 180px;
+            height: 80px;
+            background: #34495e;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        .logo-graphic {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            margin-top: 10px;
+            margin-right: 8px;
+            margin-left: 10px;
+            flex-shrink: 0;
+            /* LOGO ROTATION - 90 Grad nach rechts */
+            transform: rotate(90deg);
+        }
+        
+        .wave-arc {
+            position: absolute;
+            border: 3px solid;
+            border-radius: 50%;
+            border-right: transparent;
+            border-bottom: transparent;
+            transform-origin: bottom right;
+        }
+        
+        .wave-arc:nth-child(1) {
+            width: 12px;
+            height: 12px;
+            top: 24px;
+            left: 24px;
+            border-color: #2ecc71 transparent transparent #2ecc71;
+            transform: rotate(-45deg);
+        }
+        
+        .wave-arc:nth-child(2) {
+            width: 18px;
+            height: 18px;
+            top: 21px;
+            left: 18px;
+            border-color: #27ae60 transparent transparent #27ae60;
+            transform: rotate(-45deg);
+        }
+        
+        .wave-arc:nth-child(3) {
+            width: 24px;
+            height: 24px;
+            top: 18px;
+            left: 12px;
+            border-color: #2ecc71 transparent transparent #2ecc71;
+            transform: rotate(-45deg);
+        }
+        
+        .wave-arc:nth-child(4) {
+            width: 30px;
+            height: 30px;
+            top: 15px;
+            left: 6px;
+            border-color: #27ae60 transparent transparent #27ae60;
+            transform: rotate(-45deg);
+        }
+        
+        .wave-arc:nth-child(5) {
+            width: 36px;
+            height: 36px;
+            top: 12px;
+            left: 0px;
+            border-color: #2ecc71 transparent transparent #2ecc71;
+            transform: rotate(-45deg);
+        }
+        
+        .logo-text {
+            color: white;
+            font-weight: 500;
+            font-size: 0.9em;
+            text-align: left;
+            line-height: 1.1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .logo-text .company-name {
+            font-weight: 600;
+            font-size: 1.1em;
         }
         
         .header h1 {
             color: #2d4a3e;
             font-size: 2.5em;
             margin-bottom: 10px;
+            /* TITEL GRADIENT - Grüne Farben */
             background: linear-gradient(45deg, #00d084, #00a86b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -72,6 +172,7 @@
             left: 0;
             right: 0;
             height: 4px;
+            /* OBERE LINIE DER CHARTS - Grüner Gradient */
             background: linear-gradient(45deg, #00d084, #00a86b);
         }
         
@@ -103,6 +204,7 @@
         }
         
         .metric-card {
+            /* METRIC CARDS - Grüner Gradient */
             background: linear-gradient(135deg, #00d084 0%, #00a86b 100%);
             color: white;
             padding: 25px;
@@ -160,6 +262,7 @@
         }
         
         .highlight {
+            /* HIGHLIGHT TEXT - Grüne Farbe */
             color: #27ae60;
             font-weight: bold;
         }
@@ -172,6 +275,7 @@
         }
         
         .nav-btn {
+            /* NAVIGATION BUTTON - Grüner Gradient */
             background: linear-gradient(135deg, #00d084 0%, #00a86b 100%);
             color: white;
             border: none;
@@ -205,12 +309,44 @@
             .metric-value {
                 font-size: 2em;
             }
+            
+            .company-logo {
+                position: static;
+                width: 140px;
+                height: 50px;
+                margin: 0 auto 20px;
+                padding: 0 10px;
+            }
+            
+            .logo-graphic {
+                width: 30px;
+                height: 30px;
+                margin-right: 8px;
+            }
+            
+            .logo-text {
+                font-size: 0.8em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <div class="company-logo">
+                <div class="logo-graphic">
+                    <div class="wave-arc"></div>
+                    <div class="wave-arc"></div>
+                    <div class="wave-arc"></div>
+                    <div class="wave-arc"></div>
+                    <div class="wave-arc"></div>
+                </div>
+                <div class="logo-text">
+                    <div class="company-name">NextWave</div>
+                    <div>Software</div>
+                    <div>GmbH</div>
+                </div>
+            </div>
             <h1>Kostenplan & ROI Analyse</h1>
             <p>NextWave Software GmbH - Mitarbeiterzufriedenheits-Plattform</p>
         </div>
@@ -298,6 +434,14 @@
     </div>
     
     <script>
+        // CHART FARBEN - Hier können Sie die Diagrammfarben ändern
+        const primaryColor = '#0D1B1E';    // Hauptgrün
+        const secondaryColor = '#00a86b';  // Dunkleres Grün
+        const accentColor = '#4dd0a7';     // Helleres Grün
+        const lightColor = '#80e0c7';      // Sehr helles Grün
+        const palestColor = '#b3f0dd';     // Blassestes Grün
+        const negativeColor = '#ff6b6b';   // Rot für negative Werte
+        
         // Kostenaufteilung Chart
         const ctx1 = document.getElementById('kostenChart').getContext('2d');
         new Chart(ctx1, {
@@ -307,9 +451,9 @@
                 datasets: [{
                     data: [15840, 256300, 50695],
                     backgroundColor: [
-                        '#00d084',
-                        '#00a86b',
-                        '#4dd0a7'
+                        primaryColor,
+                        secondaryColor,
+                        accentColor
                     ],
                     borderWidth: 0
                 }]
@@ -347,13 +491,13 @@
                 datasets: [{
                     label: 'Kumulierter Cashflow',
                     data: [-322835, -223530, -124225, -24920, 74385],
-                    borderColor: '#00d084',
+                    borderColor: primaryColor,
                     backgroundColor: 'rgba(0, 208, 132, 0.1)',
                     fill: true,
                     tension: 0.4,
                     pointRadius: 6,
                     pointHoverRadius: 8,
-                    pointBackgroundColor: '#00d084',
+                    pointBackgroundColor: primaryColor,
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2
                 }]
@@ -395,17 +539,17 @@
                 datasets: [{
                     label: 'Jährlicher Nutzen',
                     data: [150000, 150000, 150000, 150000],
-                    backgroundColor: '#00d084',
+                    backgroundColor: primaryColor,
                     borderRadius: 5
                 }, {
                     label: 'Betriebskosten',
                     data: [-50695, -50695, -50695, -50695],
-                    backgroundColor: '#ff6b6b',
+                    backgroundColor: negativeColor,
                     borderRadius: 5
                 }, {
                     label: 'Netto-Cashflow',
                     data: [99305, 99305, 99305, 99305],
-                    backgroundColor: '#00a86b',
+                    backgroundColor: secondaryColor,
                     borderRadius: 5
                 }]
             },
@@ -444,7 +588,7 @@
                 labels: ['Reduzierung Fluktuationskosten', 'Produktivitätssteigerung'],
                 datasets: [{
                     data: [100000, 50000],
-                    backgroundColor: ['#00d084', '#4dd0a7'],
+                    backgroundColor: [primaryColor, accentColor],
                     borderWidth: 0
                 }]
             },
@@ -482,11 +626,11 @@
                     label: 'Kosten',
                     data: [81000, 54000, 27000, 27000, 27000],
                     backgroundColor: [
-                        '#00d084',
-                        '#00a86b',
-                        '#4dd0a7',
-                        '#80e0c7',
-                        '#b3f0dd'
+                        primaryColor,
+                        secondaryColor,
+                        accentColor,
+                        lightColor,
+                        palestColor
                     ],
                     borderRadius: 5
                 }]
@@ -528,9 +672,9 @@
                 datasets: [{
                     data: [24000, 10000, 16695],
                     backgroundColor: [
-                        '#00d084',
-                        '#00a86b',
-                        '#4dd0a7'
+                        primaryColor,
+                        secondaryColor,
+                        accentColor
                     ],
                     borderWidth: 0
                 }]
